@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>人脸识别登录</title>
+    <script src="/static/js/vue.js" type="text/javascript"></script>
+    <script src="/static/js/index.js" type="text/javascript"></script>
+    <link href="/static/css/index.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/element-ui.css" rel="stylesheet" type="text/css">
+    <script src="/static/js/axios.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="login">
+    <div style="height: 60px;line-height: 60px;text-align: center;margin-top: 50px;font-size: 40px;color: #888888">有趣有用人脸识别登录</div>
+    <div style="height: 150px;line-height: 150px;text-align: center;margin-top: 10px;display: flex">
+        <div class="div3">
+            <video ref="video" autoplay width="200" height="150"></video>
+        </div>
+        <div class="div4">
+            <canvas ref="canvas"width="200" height="150"></canvas>
+        </div>
+    </div>
+    <div style="height: 60px;line-height: 60px;text-align: center;margin-top: 20px;display: flex">
+        <div class="div5">
+            <el-button class="button1" style="color: #888888;font-size: 24px" @click="photo">拍照</el-button>
+        </div>
+        <div class="div6">
+            <el-button class="button2" style="color: #888888;font-size: 24px" @click="login">登录</el-button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    new Vue({
+        el: '#login',
+        data(){
+            return {
+                image: '',
+            }
+        },
+
+        filters: {},
+        mounted: function () {
+            this.initPhoto();
+            this.photo();
+        },
+        created(){
+            console.log("初始化请求数据的方法");
+        },
+        methods: {
+            async initPhoto(){
+                this.$refs.video.srcObject= await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+                this._context2d=this.$refs.canvas.getContext("2d");
+                this.canvas=this.$refs.canvas;
+            },
+            photo(){
+                this._context2d.drawImage(this.$refs.video,0,0,200,150);
+                var img = document.createElement("img"); // 创建img元素
+                img.src =this.canvas.toDataURL("image/png"); // 截取视频第一帧
+                this.image = img.src
+            },
+            login() {
+                axios({
+                    method:'get',
+                    url:'/face/login',
+                    params:{
+                        image: this.image,
+                    },
+                }).then((res)=>{
+                    if(res.data === 'success') {
+                        window.location.href = "http://localhost/success";
+                    }else{
+                        this.$message.error('人脸识别错误，登录失败');
+                    }
+                });
+            },
+        }
+    });
+
+</script>
+</html>

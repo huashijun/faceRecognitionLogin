@@ -1,0 +1,30 @@
+server:
+  port: 80
+  max-http-header-size: 100KB
+# thymeleaf
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    cache: false
+  mvc:
+    static-path-pattern: /static/**
+
+  #Redis
+  redis:
+    database: 6
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 10000
+    lettuce:
+      shutdown-timeout: 1000
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 5
+        min-idle: 2
